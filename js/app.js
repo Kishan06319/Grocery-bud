@@ -1,9 +1,23 @@
-import { groceryItems } from "./data.js";
 import { createItems } from "./items.js";
 import { createForm } from "./form.js";
 
-let items = groceryItems;
 let editId = null;
+
+// Local Storage Functions
+function getLocalStorage() {
+  const list = localStorage.getItem("grocery-list");
+  if (list) {
+    return JSON.parse(list);
+  }
+  return [];
+}
+
+function setLocalStorage(itemsArray) {
+  localStorage.setItem("grocery-list", JSON.stringify(itemsArray));
+}
+
+// Initialize items from local storage
+let items = getLocalStorage();
 
 // Render App
 function render() {
@@ -33,6 +47,7 @@ export function addItem(itemName) {
     id: generateId(),
   };
   items = [...items, newItem];
+  setLocalStorage(items);
   render();
   setTimeout(() => alert("Item Added Successfully!"), 0);
 }
@@ -45,12 +60,14 @@ export function editCompleted(itemId) {
     }
     return item;
   });
+  setLocalStorage(items);
   render();
 }
 
 // Remove Item Function
 export function removeItem(itemId) {
   items = items.filter((item) => item.id !== itemId);
+  setLocalStorage(items);
   render();
   setTimeout(() => alert("Item Deleted Successfully!"), 0);
 }
@@ -64,6 +81,7 @@ export function updateItemName(newName) {
     return item;
   });
   editId = null;
+  setLocalStorage(items);
   render();
   setTimeout(() => alert("Item Updated Successfully!"), 0);
 }
